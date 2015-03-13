@@ -91,19 +91,6 @@ export UPSTREAM_EXAMPLEAPP_SERVER2=127.0.0.1:4000
 ```
 
 
-
-
-{{range gets "/haproxy/app/*"}}
-backend {{base .Key}}
-  option forwardfor
-{{$app := base .Key}}{{$apps := printf "/haproxy/upstream/%s/*" $app}}{{range gets $apps}}
-  server {{base .Key}} {{.Value}} check
-{{end}}
-
-
-
-
-
 ## Contributing
 
 Fork -> Patch -> Push -> Pull Request
