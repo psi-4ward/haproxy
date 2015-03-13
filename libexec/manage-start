@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Usage: manage start
+# Summary: Start the main process
+# Help: This command is used to start the main process.
+set -e
+[[ -z $_MANAGE_ROOT ]] && exit 1
+
+if manage-running
+then
+  echo "Service is already running"
+else
+  manage-prepare && start-stop-daemon --pidfile /var/run/haproxy.pid --exec /usr/sbin/haproxy --start -- -D -p /var/run/haproxy.pid -f /etc/haproxy/haproxy.cfg
+
+  case "${DISCOVERY_TYPE}" in
+    etcd)
+      DISCOVERY_COMMAND="confd -backend etcd -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX} ${DISCOVERY_OPTS}"
+      ;;
+    consul)
+      DISCOVERY_COMMAND="confd -backend consul -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX} ${DISCOVERY_OPTS}"
+      ;;
+    env)
+      DISCOVERY_COMMAND="confd -backend env -prefix ${DISCOVERY_PREFIX} ${DISCOVERY_OPTS}"
+      ;;
+  esac
+
+  echo "Loading initial config..."
+  until ${DISCOVERY_COMMAND} -onetime
+  do
+    sleep 10
+  done
+
+  echo "Running confd constant..."
+  ${DISCOVERY_COMMAND} -interval ${DISCOVERY_INTERVAL} -quiet
+fi

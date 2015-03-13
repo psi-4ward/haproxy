@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Usage: manage check
+# Summary: Check config file
+# Help: This command is used to check the config file of the service.
+set -e
+[[ -z $_MANAGE_ROOT ]] && exit 1
+
+/usr/sbin/haproxy -q -c -f /etc/haproxy/haproxy.cfg

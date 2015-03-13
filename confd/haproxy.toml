@@ -1,0 +1,11 @@
+[template]
+src = "haproxy.cfg.tmpl"
+dest = "/etc/haproxy/haproxy.cfg"
+
+keys = [
+  "/app",
+  "/upstream"
+]
+
+check_cmd = "manage check"
+reload_cmd = "manage reload"

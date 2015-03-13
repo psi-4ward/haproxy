@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Usage: manage prepare
+# Summary: Prepare environment
+# Help: This command is used to prepare the environment for the container.
+set -e
+[[ -z $_MANAGE_ROOT ]] && exit 1
+
+if [ -n "${HAPROXY_CERT}" ]
+then
+  echo -e "${HAPROXY_CERT}" >| /etc/ssl/private/haproxy.pem
+fi

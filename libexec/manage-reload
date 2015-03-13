@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Usage: manage reload
+# Summary: Reload the main process
+# Help: This command is used to reload the main process.
+set -e
+[[ -z $_MANAGE_ROOT ]] && exit 1
+
+if manage-running
+then
+  /usr/sbin/haproxy -D -p /var/run/haproxy.pid -f /etc/haproxy/haproxy.cfg -sf $(manage-pid)
+else
+  start-stop-daemon --pidfile /var/run/haproxy.pid --exec /usr/sbin/haproxy --start -- -D -p /var/run/haproxy.pid -f /etc/haproxy/haproxy.cfg
+fi
