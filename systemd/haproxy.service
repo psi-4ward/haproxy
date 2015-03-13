@@ -11,5 +11,5 @@ ExecStartPre=-/bin/bash -c '/usr/bin/docker kill %p || /usr/bin/true'
 ExecStartPre=-/bin/bash -c '/usr/bin/docker rm %p || /usr/bin/true'
 ExecStartPre=-/bin/bash -c '/usr/bin/docker pull webhippie/haproxy:latest || /usr/bin/true'
 
-ExecStart=/usr/bin/docker run --rm -p 80:80 -p 443:443 --name %p webhippie/haproxy:latest start
+ExecStart=/usr/bin/docker run --rm -p 80:80 -p 443:443 -p 9000:9000 --name %p webhippie/haproxy:latest start
 ExecStop=/usr/bin/docker kill %p

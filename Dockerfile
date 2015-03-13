@@ -28,7 +28,7 @@ RUN mkdir -p /etc/confd/templates
 ADD confd/haproxy.toml /etc/confd/conf.d/haproxy.toml
 ADD confd/haproxy.cfg.tmpl /etc/confd/templates/haproxy.cfg.tmpl
 
-EXPOSE 80 443
+EXPOSE 80 443 9000
 
 WORKDIR /docker
 ENTRYPOINT ["manage"]

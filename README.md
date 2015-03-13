@@ -7,7 +7,7 @@ These are docker images for Haproxy running on an
 ## Usage
 
 ```
-docker run -p 80:80 -p 443:443 -d --name haproxy webhippie/haproxy:latest start
+docker run -p 80:80 -p 443:443 -p 9000:9000 -d --name haproxy webhippie/haproxy:latest start
 
 # Execute this for further available commands
 docker exec -ti haproxy manage help
