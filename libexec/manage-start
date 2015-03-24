@@ -15,9 +15,9 @@ else
     etcd)
       DISCOVERY_COMMAND="confd -backend etcd -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX}"
 
-      if [ -n $DISCOVERY_CLIENT_KEY ]
+      if [ -n "${DISCOVERY_CLIENT_KEY}" ]
       then
-        if [ -f $DISCOVERY_CLIENT_KEY ]
+        if [ -f "${DISCOVERY_CLIENT_KEY}" ]
         then
           DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-key=${DISCOVERY_CLIENT_KEY}"
         else
@@ -26,9 +26,9 @@ else
         fi
       fi
 
-      if [ -n $DISCOVERY_CLIENT_CERT ]
+      if [ -n "${DISCOVERY_CLIENT_CERT}" ]
       then
-        if [ -f $DISCOVERY_CLIENT_CERT ]
+        if [ -f "${DISCOVERY_CLIENT_CERT}" ]
         then
           DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=${DISCOVERY_CLIENT_CERT}"
         else
@@ -37,9 +37,9 @@ else
         fi
       fi
 
-      if [ -n $DISCOVERY_CLIENT_CA ]
+      if [ -n "${DISCOVERY_CLIENT_CA}" ]
       then
-        if [ -f $DISCOVERY_CLIENT_CA ]
+        if [ -f "${DISCOVERY_CLIENT_CA}" ]
         then
           DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=${DISCOVERY_CLIENT_CA}"
         else
