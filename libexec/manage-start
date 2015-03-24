@@ -13,7 +13,42 @@ else
 
   case "${DISCOVERY_TYPE}" in
     etcd)
-      DISCOVERY_COMMAND="confd -backend etcd -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX} ${DISCOVERY_OPTS}"
+      DISCOVERY_COMMAND="confd -backend etcd -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX}"
+
+      if [ -n $DISCOVERY_CLIENT_KEY ]
+      then
+        if [ -f $DISCOVERY_CLIENT_KEY ]
+        then
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-key=${DISCOVERY_CLIENT_KEY}"
+        else
+          echo -e "${DISCOVERY_CLIENT_KEY}" >| /tmp/etcd.key
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-key=/tmp/etcd.key"
+        fi
+      fi
+
+      if [ -n $DISCOVERY_CLIENT_CERT ]
+      then
+        if [ -f $DISCOVERY_CLIENT_CERT ]
+        then
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=${DISCOVERY_CLIENT_CERT}"
+        else
+          echo -e "${DISCOVERY_CLIENT_CERT}" >| /tmp/etcd.crt
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=/tmp/etcd.crt"
+        fi
+      fi
+
+      if [ -n $DISCOVERY_CLIENT_CA ]
+      then
+        if [ -f $DISCOVERY_CLIENT_CA ]
+        then
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=${DISCOVERY_CLIENT_CA}"
+        else
+          echo -e "${DISCOVERY_CLIENT_CA}" >| /tmp/ca.crt
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-ca-keys=/tmp/ca.crt"
+        fi
+      fi
+
+      DISCOVERY_COMMAND="${DISCOVERY_COMMAND} ${DISCOVERY_OPTS}"
       ;;
     consul)
       DISCOVERY_COMMAND="confd -backend consul -node ${DISCOVERY_HOST}:${DISCOVERY_PORT} -prefix ${DISCOVERY_PREFIX} ${DISCOVERY_OPTS}"

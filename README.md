@@ -47,11 +47,14 @@ ENV DISCOVERY_HOST 127.0.0.1
 ENV DISCOVERY_PORT 4001
 ENV DISCOVERY_INTERVAL 30
 ENV DISCOVERY_PREFIX /
-ENV DISCOVERY_OPTS
+ENV DISCOVERY_OPTS # Optional, any allowed confd param
+ENV DISCOVERY_CLIENT_KEY # Optional, as string or filename
+ENV DISCOVERY_CLIENT_CERT # Optional, as string or filename
+ENV DISCOVERY_CLIENT_CA # Optional, as string or filename
 
 ENV HAPROXY_USERNAME webhippie
 ENV HAPROXY_PASSWORD webhippie
-ENV HAPROXY_CERT ssl_key_and_cert_string
+ENV HAPROXY_CERT # Optional, as string or filename
 ```
 
 

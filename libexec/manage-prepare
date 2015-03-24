@@ -7,5 +7,10 @@ set -e
 
 if [ -n "${HAPROXY_CERT}" ]
 then
-  echo -e "${HAPROXY_CERT}" >| /etc/ssl/private/haproxy.pem
+  if [ -f $HAPROXY_CERT ]
+  then
+    cat "${HAPROXY_CERT}" >| /etc/ssl/private/haproxy.pem
+  else
+    echo -e "${HAPROXY_CERT}" >| /etc/ssl/private/haproxy.pem
+  fi
 fi
