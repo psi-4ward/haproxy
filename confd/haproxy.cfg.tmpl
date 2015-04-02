@@ -1,53 +1,53 @@
-global                        
+global
   log 127.0.0.1 local0
   log 127.0.0.1 local1 notice
-                              
-  maxconn 32768                      
-  chroot /var/lib/haproxy            
-  pidfile /var/run/haproxy.pid  
-                                                                                                  
-  user haproxy                                                                                    
+
+  maxconn 32768
+  chroot /var/lib/haproxy
+  pidfile /var/run/haproxy.pid
+
+  user haproxy
   group haproxy
-                                
-  daemon                                                                                          
-  debug    
-                                
-  stats socket /var/lib/haproxy/stats                                                             
-               
+
+  daemon
+  debug 
+
+  stats socket /var/lib/haproxy/stats
+     
   tune.ssl.default-dh-param 2048
   ssl-default-bind-ciphers HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4:!ADH:!LOW@STRENGTH
-                    
-defaults           
-  log global          
-  mode http           
-                       
-  retries 3            
-  maxconn 10000                                                                   
-                                                                                  
-  option httplog                                                                                            
-  option dontlognull                                                                                        
-  option redispatch                                                               
-                                                                                  
-  timeout connect 5000                                                                                      
-  timeout client 50000                                                            
-  timeout server 450000                                                 
-                                                                                                            
-listen stats :9000                                                      
-  stats enable                                                          
-  stats uri /                                                                                               
-  stats refresh 5s                                                      
-  stats realm HAProxy                                                   
+
+defaults
+  log global
+  mode http 
+   
+  retries 3
+  maxconn 10000
+  
+  option httplog
+  option dontlognull
+  option redispatch
+  
+  timeout connect 5000
+  timeout client 50000
+  timeout server 450000
+ 
+listen stats :9000
+  stats enable 
+  stats uri /
+  stats refresh 5s
+  stats realm HAProxy
   stats auth {{getenv "HAPROXY_USERNAME"}}:{{getenv "HAPROXY_PASSWORD"}}
-                                               
+
 {{range $fe := lsdir "/frontends"}}
-frontend {{$fe}}{{$confdir := printf "/frontends/%s/config" $fe}}{{$config := getv $confdir}}{{$config := json $config}}
-  bind {{$config.ip}}:{{$config.port}}
+frontend {{$fe}}{{$confdir := printf "/frontends/%s/config" $fe}}{{$config := json (getv $confdir)}}
+  bind {{$config.ip}}:{{$config.port}} {{range $config.options}}{{.}} {{end}}
   mode {{$config.mode}}
   {{$vhostdir := printf "/frontends/%s/vhosts" $fe}}{{range $vhost := lsdir $vhostdir}}{{$backendkey := printf "%s/%s/backend" $vhostdir $vhost}}{{$backend := getv $backendkey}}
     use_backend {{$backend}} if { hdr(host) -i {{$vhost}} }
 {{end}}{{end}}
 
 {{range $be := lsdir "/backends"}}
-backend {{$be}}{{$serversdir := printf "/backends/%s/servers/*" $be}}{{range gets $serversdir}}{{$data := json .Value}}
-    server {{.Key}} {{$data.ip}}:{{$data.port}}
+backend {{$be}}{{$serversdir := printf "/backends/%s/servers" $be}}{{range $server := lsdir $serversdir}}{{$dir := printf "/backends/%s/servers/%s" $be $server}}{{$data := json (getv $dir)}}
+    server {{$server}} {{$data.ip}}:{{$data.port}} {{range $data.options}}{{.}} {{end}}
 {{end}}{{end}}
