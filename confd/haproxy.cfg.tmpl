@@ -1,60 +1,53 @@
-global
+global                        
   log 127.0.0.1 local0
   log 127.0.0.1 local1 notice
-
-  maxconn 32768
-  chroot /var/lib/haproxy
-  pidfile /var/run/haproxy.pid
-
-  user haproxy
+                              
+  maxconn 32768                      
+  chroot /var/lib/haproxy            
+  pidfile /var/run/haproxy.pid  
+                                                                                                  
+  user haproxy                                                                                    
   group haproxy
-
-  daemon
-  debug
-
-  stats socket /var/lib/haproxy/stats
-
+                                
+  daemon                                                                                          
+  debug    
+                                
+  stats socket /var/lib/haproxy/stats                                                             
+               
   tune.ssl.default-dh-param 2048
   ssl-default-bind-ciphers HIGH:!aNULL:!eNULL:!EXPORT:!DES:!3DES:!MD5:!PSK:!RC4:!ADH:!LOW@STRENGTH
-
-defaults
-  log global
-  mode http
-
-  retries 3
-  maxconn 10000
-
-  option httplog
-  option dontlognull
-  option redispatch
-
-  timeout connect 5000
-  timeout client 50000
-  timeout server 450000
-
-frontend http-in
-  bind :80
-  {{if getenv "HAPROXY_CERT"}}bind :443 tfo ssl crt /etc/ssl/private/haproxy.pem no-sslv3 npn http/1.1,http/1.0{{end}}
-
-{{range gets "/app/*"}}
-  acl is_{{base .Key}} hdr(host) -i {{.Value}}
-{{end}}
-
-{{range gets "/app/*"}}
-  use_backend {{base .Key}} if is_{{base .Key}}
-{{end}}
-
-{{range gets "/app/*"}}
-backend {{base .Key}}
-  option forwardfor
-{{$app := base .Key}}{{$apps := printf "/upstream/%s/*" $app}}{{range gets $apps}}
-  server {{base .Key}} {{.Value}} check
-{{end}}
-{{end}}
-
-listen stats :9000
-  stats enable
-  stats uri /
-  stats refresh 5s
-  stats realm HAProxy
+                    
+defaults           
+  log global          
+  mode http           
+                       
+  retries 3            
+  maxconn 10000                                                                   
+                                                                                  
+  option httplog                                                                                            
+  option dontlognull                                                                                        
+  option redispatch                                                               
+                                                                                  
+  timeout connect 5000                                                                                      
+  timeout client 50000                                                            
+  timeout server 450000                                                 
+                                                                                                            
+listen stats :9000                                                      
+  stats enable                                                          
+  stats uri /                                                                                               
+  stats refresh 5s                                                      
+  stats realm HAProxy                                                   
   stats auth {{getenv "HAPROXY_USERNAME"}}:{{getenv "HAPROXY_PASSWORD"}}
+                                               
+{{range $fe := lsdir "/frontends"}}
+frontend {{$fe}}{{$confdir := printf "/frontends/%s/config" $fe}}{{$config := getv $confdir}}{{$config := json $config}}
+  bind {{$config.ip}}:{{$config.port}}
+  mode {{$config.mode}}
+  {{$vhostdir := printf "/frontends/%s/vhosts" $fe}}{{range $vhost := lsdir $vhostdir}}{{$backendkey := printf "%s/%s/backend" $vhostdir $vhost}}{{$backend := getv $backendkey}}
+    use_backend {{$backend}} if { hdr(host) -i {{$vhost}} }
+{{end}}{{end}}
+
+{{range $be := lsdir "/backends"}}
+backend {{$be}}{{$serversdir := printf "/backends/%s/servers/*" $be}}{{range gets $serversdir}}{{$data := json .Value}}
+    server {{.Key}} {{$data.ip}}:{{$data.port}}
+{{end}}{{end}}

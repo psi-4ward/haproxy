@@ -43,10 +43,10 @@ Some useful manage commands are:
 
 ```bash
 ENV DISCOVERY_TYPE etcd
-ENV DISCOVERY_HOST 127.0.0.1
+ENV DISCOVERY_HOST http://127.0.0.1
 ENV DISCOVERY_PORT 4001
 ENV DISCOVERY_INTERVAL 30
-ENV DISCOVERY_PREFIX /
+ENV DISCOVERY_PREFIX /services/haproxy
 ENV DISCOVERY_OPTS # Optional, any allowed confd param
 ENV DISCOVERY_CLIENT_KEY # Optional, as string or filename
 ENV DISCOVERY_CLIENT_CERT # Optional, as string or filename

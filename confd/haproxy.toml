@@ -3,8 +3,8 @@ src = "haproxy.cfg.tmpl"
 dest = "/etc/haproxy/haproxy.cfg"
 
 keys = [
-  "/app",
-  "/upstream"
+  "/backends",
+  "/frontends"
 ]
 
 check_cmd = "manage check"
