@@ -40,14 +40,15 @@ listen stats :9000
   stats auth {{getenv "HAPROXY_USERNAME"}}:{{getenv "HAPROXY_PASSWORD"}}
 
 {{range $fe := lsdir "/frontends"}}
-frontend {{$fe}}{{$confdir := printf "/frontends/%s/config" $fe}}{{$config := json (getv $confdir)}}
+frontend {{$fe}}{{$config := json (getv (printf "/frontends/%s/config" $fe))}}
   bind {{$config.ip}}:{{$config.port}} {{range $config.options}}{{.}} {{end}}
   mode {{$config.mode}}
-  {{$vhostdir := printf "/frontends/%s/vhosts" $fe}}{{range $vhost := lsdir $vhostdir}}{{$backendkey := printf "%s/%s/backend" $vhostdir $vhost}}{{$backend := getv $backendkey}}
+  {{range $vhost := lsdir (printf "/frontends/%s/vhosts" $fe)}}{{$backend := getv (printf "/frontends/%s/vhosts/%s/backend" $fe $vhost)}}
     use_backend {{$backend}} if { hdr(host) -i {{$vhost}} }
 {{end}}{{end}}
 
 {{range $be := lsdir "/backends"}}
-backend {{$be}}{{$serversdir := printf "/backends/%s/servers" $be}}{{range $server := lsdir $serversdir}}{{$dir := printf "/backends/%s/servers/%s" $be $server}}{{$data := json (getv $dir)}}
+backend {{$be}}{{range $server := ls (printf "/backends/%s/servers" $be)}}{{$data := json (getv (printf "/backends/%s/servers/%s" $be $server))}}
     server {{$server}} {{$data.ip}}:{{$data.port}} {{range $data.options}}{{.}} {{end}}
 {{end}}{{end}}
+
