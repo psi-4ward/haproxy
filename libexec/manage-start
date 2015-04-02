@@ -41,7 +41,7 @@ else
       then
         if [ -f "${DISCOVERY_CLIENT_CA}" ]
         then
-          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-cert=${DISCOVERY_CLIENT_CA}"
+          DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-ca-keys=${DISCOVERY_CLIENT_CA}"
         else
           echo -e "${DISCOVERY_CLIENT_CA}" >| /tmp/ca.crt
           DISCOVERY_COMMAND="${DISCOVERY_COMMAND} -client-ca-keys=/tmp/ca.crt"
