@@ -7,5 +7,5 @@ keys = [
   "/upstream"
 ]
 
-check_cmd = "manage check"
+check_cmd = "manage check {{.src}}"
 reload_cmd = "manage reload"
