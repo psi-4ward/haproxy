@@ -13,7 +13,6 @@ ENV HAPROXY_PASSWORD webhippie
 RUN mkdir -p /docker
 
 RUN apk-install \
-  ca-certificates \
   haproxy \
   curl
 
@@ -21,7 +20,7 @@ RUN mkdir -p /docker/libexec
 ADD libexec /docker/libexec
 RUN ln -sf /docker/libexec/manage /usr/bin/manage
 
-RUN curl -sSL -o /usr/bin/confd https://github.com/kelseyhightower/confd/releases/download/v0.7.1/confd-0.7.1-linux-amd64
+RUN curl -sSL -k -o /usr/bin/confd https://github.com/kelseyhightower/confd/releases/download/v0.7.1/confd-0.7.1-linux-amd64
 RUN chmod +x /usr/bin/confd
 RUN mkdir -p /etc/confd/conf.d
 RUN mkdir -p /etc/confd/templates
