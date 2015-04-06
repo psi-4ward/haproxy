@@ -13,6 +13,7 @@ ENV HAPROXY_PASSWORD webhippie
 RUN mkdir -p /docker
 
 RUN apk-install \
+  ca-certificates \
   haproxy \
   curl
 
